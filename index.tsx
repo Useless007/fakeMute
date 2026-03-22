@@ -1,26 +1,31 @@
 import definePlugin from "@utils/types";
 import { Logger } from "@utils/Logger";
-import { wreq } from "@webpack";
+import { findByProps } from "@webpack";
 
 let spoofMute = false;
 let spoofDeafen = false;
 let panel: HTMLDivElement | null = null;
-let GatewayConnectionProto: any = null;
-let originalVoiceStateUpdate: any = null;
+let originalSend: any = null;
+
 let onMouseMove: ((e: MouseEvent) => void) | null = null;
 let onMouseUp: (() => void) | null = null;
-let currentGateway: any = null;
-let lastVoiceState: any = null;
+
+let lastWs: WebSocket | null = null;
+let lastVoiceStateJson: any = null;
+
 const logger = new Logger("FakeMute");
 
 export default definePlugin({
     name: "FakeMute",
-    description: "Fake Mute/Deafen by intercepting Discord Gateway voiceStateUpdate natively.",
-    authors: [{
-        name: "User",
-        id: 0n
-    }],
+    description: "Fake Mute/Deafen (Supports Browser + Desktop/Binary).",
+    authors: [{ name: "User", id: 0n }],
     start: () => {
+        const msgpack = findByProps("pack", "unpack");
+
+        if (!originalSend) {
+            originalSend = WebSocket.prototype.send;
+        }
+
         panel = document.createElement("div");
         panel.style.position = "fixed";
         panel.style.bottom = "20px";
@@ -79,14 +84,23 @@ export default definePlugin({
         };
 
         const pushStateUpdate = () => {
-            if (currentGateway && originalVoiceStateUpdate && lastVoiceState) {
-                const payload = Object.assign({}, lastVoiceState);
-                if (spoofMute) payload.selfMute = true;
-                if (spoofDeafen) payload.selfDeaf = true;
-                originalVoiceStateUpdate.call(currentGateway, payload);
-                logger.info("Sent immediate update to Discord server!", payload);
+            if (lastWs && lastVoiceStateJson) {
+                const payload = JSON.parse(JSON.stringify(lastVoiceStateJson));
+                payload.d.self_mute = spoofMute;
+                payload.d.self_deaf = spoofDeafen;
+                
+                let outData;
+                if (typeof msgpack !== "undefined" && msgpack.pack) {
+                    outData = msgpack.pack(payload);
+                    if (outData.buffer) outData = outData.buffer;
+                } else {
+                    outData = JSON.stringify(payload);
+                }
+                
+                originalSend.call(lastWs, outData);
+                logger.info("Sent immediate payload to Discord:", payload);
             } else {
-                logger.info("State saved. Will apply when you join a voice channel.");
+                logger.info("No active VoiceState payload saved yet. Will apply when you join a channel.");
             }
         };
 
@@ -108,42 +122,48 @@ export default definePlugin({
             };
         }
 
-        try {
-            // Find Discord's GatewayConnection class prototype from Webpack Cache
-            if (wreq && wreq.c) {
-                for (const key in wreq.c) {
-                    const mod = wreq.c[key]?.exports;
-                    if (!mod) continue;
+        WebSocket.prototype.send = function (data) {
+            try {
+                let json;
+                let isBuffer = false;
 
-                    // Discord modules might be exported directly, or in .Z / .default
-                    const target = mod.default || mod.Z || mod;
-                    // Check if it's the GatewayConnection prototype that handles voice state
-                    if (target && target.prototype && target.prototype.voiceStateUpdate && target.prototype.sendPayload) {
-                        GatewayConnectionProto = target.prototype;
-                        originalVoiceStateUpdate = GatewayConnectionProto.voiceStateUpdate;
-                        
-                        // Patch the Gateway's voice state update payload
-                        GatewayConnectionProto.voiceStateUpdate = function(args: any) {
-                            currentGateway = this;
-                            if (args) {
-                                lastVoiceState = Object.assign({}, args);
-                                if (spoofMute) args.selfMute = true;
-                                if (spoofDeafen) args.selfDeaf = true;
-                                logger.info("Injected fake states:", args);
-                            }
-                            // Call original native method with modified args
-                            return originalVoiceStateUpdate.call(this, args);
-                        };
-                        logger.info("Succesfully hooked Discord's Gateway Connection.");
-                        break;
+                if (typeof data === "string") {
+                    json = JSON.parse(data);
+                } else if (data instanceof ArrayBuffer || data instanceof Uint8Array) {
+                    if (msgpack && msgpack.unpack) {
+                        json = msgpack.unpack(data instanceof ArrayBuffer ? new Uint8Array(data) : data);
+                        isBuffer = true;
                     }
                 }
-            } else {
-                logger.error("Could not find webpack require (wreq)!");
+
+                if (json && json.op === 4 && json.d) {
+                    // This is our Voice State Update OP code
+                    lastWs = this; // Capture the WebSocket instance handling Voice State
+                    lastVoiceStateJson = JSON.parse(JSON.stringify(json));
+
+                    if (typeof json.d.self_mute === "boolean") {
+                        json.d.self_mute = spoofMute;
+                    }
+                    if (typeof json.d.self_deaf === "boolean") {
+                        json.d.self_deaf = spoofDeafen;
+                    }
+                    
+                    if (isBuffer) {
+                        data = msgpack.pack(json);
+                        if (data.buffer) data = data.buffer;
+                    } else {
+                        data = JSON.stringify(json);
+                    }
+                    logger.info("Spoofed outgoing voice state:", json);
+                }
+            } catch (err) {
+                logger.warn("Failed to process packet:", err);
             }
-        } catch (e) {
-            logger.error("Failed to run Webpack search. Error:", e);
-        }
+
+            return originalSend.call(this, data);
+        };
+
+        logger.info("FakeMute is ready (Hooked WebSocket.send securely)");
     },
     stop: () => {
         if (panel && panel.parentElement) {
@@ -157,13 +177,13 @@ export default definePlugin({
         onMouseMove = null;
         onMouseUp = null;
 
-        // Clean up the patch to prevent memory leak or crash
-        if (GatewayConnectionProto && originalVoiceStateUpdate) {
-            GatewayConnectionProto.voiceStateUpdate = originalVoiceStateUpdate;
-            originalVoiceStateUpdate = null;
-            GatewayConnectionProto = null;
+        if (originalSend) {
+            WebSocket.prototype.send = originalSend;
+            originalSend = null;
         }
         
+        lastWs = null;
+        lastVoiceStateJson = null;
         spoofMute = false;
         spoofDeafen = false;
     }
