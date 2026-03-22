@@ -11,6 +11,7 @@ let onMouseMove: ((e: MouseEvent) => void) | null = null;
 let onMouseUp: (() => void) | null = null;
 let currentGateway: any = null;
 let lastVoiceState: any = null;
+const logger = new Logger("FakeMute");
 
 export default definePlugin({
     name: "FakeMute",
@@ -83,9 +84,9 @@ export default definePlugin({
                 if (spoofMute) payload.selfMute = true;
                 if (spoofDeafen) payload.selfDeaf = true;
                 originalVoiceStateUpdate.call(currentGateway, payload);
-                Logger.log("FakeMute: Sent immediate update to Discord server!", payload);
+                logger.info("Sent immediate update to Discord server!", payload);
             } else {
-                Logger.log("FakeMute: State saved. Will apply when you join a voice channel.");
+                logger.info("State saved. Will apply when you join a voice channel.");
             }
         };
 
@@ -93,7 +94,7 @@ export default definePlugin({
             muteBtn.onclick = () => {
                 spoofMute = !spoofMute;
                 updateButtons();
-                Logger.log(`[FakeMute] Mute toggled: ${spoofMute ? "ON" : "OFF"}`);
+                logger.info(`Mute toggled: ${spoofMute ? "ON" : "OFF"}`);
                 pushStateUpdate();
             };
         }
@@ -102,7 +103,7 @@ export default definePlugin({
             deafenBtn.onclick = () => {
                 spoofDeafen = !spoofDeafen;
                 updateButtons();
-                Logger.log(`[FakeMute] Deafen toggled: ${spoofDeafen ? "ON" : "OFF"}`);
+                logger.info(`Deafen toggled: ${spoofDeafen ? "ON" : "OFF"}`);
                 pushStateUpdate();
             };
         }
@@ -128,20 +129,20 @@ export default definePlugin({
                                 lastVoiceState = Object.assign({}, args);
                                 if (spoofMute) args.selfMute = true;
                                 if (spoofDeafen) args.selfDeaf = true;
-                                Logger.log("FakeMute injected fake states:", args);
+                                logger.info("Injected fake states:", args);
                             }
                             // Call original native method with modified args
                             return originalVoiceStateUpdate.call(this, args);
                         };
-                        Logger.log("Succesfully hooked Discord's Gateway Connection.");
+                        logger.info("Succesfully hooked Discord's Gateway Connection.");
                         break;
                     }
                 }
             } else {
-                Logger.error("Could not find webpack require (wreq)!");
+                logger.error("Could not find webpack require (wreq)!");
             }
         } catch (e) {
-            Logger.error("Failed to run Webpack search for FakeMute:", e);
+            logger.error("Failed to run Webpack search. Error:", e);
         }
     },
     stop: () => {
