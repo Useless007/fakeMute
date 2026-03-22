@@ -84,9 +84,12 @@ function FakeMutePopout({ onClose }: { onClose: () => void; }) {
                 <span className="fakemute-popout-title">Fake Voice</span>
             </div>
             <div className="fakemute-popout-row">
-                <div className="fakemute-popout-label">
-                    <MicIcon />
-                    Mute
+                <div className="fakemute-popout-info">
+                    <div className="fakemute-popout-label">
+                        <MicIcon />
+                        Fake Mute
+                    </div>
+                    <div className="fakemute-popout-subtext">Appear muted to others in voice</div>
                 </div>
                 <ToggleSwitch
                     active={mute}
@@ -97,10 +100,16 @@ function FakeMutePopout({ onClose }: { onClose: () => void; }) {
                     }}
                 />
             </div>
+            
+            <div className="fakemute-popout-divider" />
+            
             <div className="fakemute-popout-row">
-                <div className="fakemute-popout-label">
-                    <HeadphoneIcon />
-                    Deafen
+                <div className="fakemute-popout-info">
+                    <div className="fakemute-popout-label">
+                        <HeadphoneIcon />
+                        Fake Deafen
+                    </div>
+                    <div className="fakemute-popout-subtext">Appear deafened to everyone</div>
                 </div>
                 <ToggleSwitch
                     active={deafen}
