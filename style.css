@@ -1,0 +1,109 @@
+/* Shrink avatar area to fit extra buttons */
+[class*="panels"] [class*="avatarWrapper"] {
+    min-width: 0;
+}
+
+/* ─── Popout Container ─── */
+.fakemute-popout {
+    width: 220px;
+    padding: 12px 14px;
+    background: var(--background-floating);
+    border-radius: 12px;
+    box-shadow: var(--shadow-high);
+    font-family: var(--font-primary);
+    color: var(--text-normal);
+    animation: fakemute-fadein 0.15s ease-out;
+}
+
+@keyframes fakemute-fadein {
+    from {
+        opacity: 0;
+        transform: translateY(6px) scale(0.97);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+/* ─── Header ─── */
+.fakemute-popout-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--background-modifier-accent);
+}
+
+.fakemute-popout-title {
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+    color: var(--header-secondary);
+}
+
+/* ─── Toggle Rows ─── */
+.fakemute-popout-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px 0;
+}
+
+.fakemute-popout-row + .fakemute-popout-row {
+    border-top: 1px solid var(--background-modifier-accent);
+}
+
+.fakemute-popout-label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text-normal);
+}
+
+/* ─── Toggle Switch ─── */
+.fakemute-switch {
+    position: relative;
+    width: 40px;
+    height: 24px;
+    border-radius: 12px;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    background: var(--input-background);
+    transition: background 0.2s ease;
+    flex-shrink: 0;
+}
+
+.fakemute-switch:hover {
+    background: #53575e;
+}
+
+.fakemute-switch.active {
+    background: #5865f2;
+}
+
+.fakemute-switch.active:hover {
+    background: #4752c4;
+}
+
+.fakemute-switch-knob {
+    position: absolute;
+    top: 3px;
+    left: 3px;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: #fff;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    pointer-events: none;
+}
+
+.fakemute-switch.active .fakemute-switch-knob {
+    transform: translateX(16px);
+    box-shadow: 0 0 8px rgba(88, 101, 242, 0.45);
+}

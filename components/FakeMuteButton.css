@@ -1,0 +1,163 @@
+/* ─── FakeMute Toolbar Button ─── */
+.fakemute-btn-top.fakemute-btn-active svg,
+.fakemute-btn-settings.fakemute-btn-active svg {
+    color: #ed4245 !important;
+    filter: drop-shadow(0 0 6px rgba(237, 66, 69, 0.6));
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.fakemute-btn-top svg,
+.fakemute-btn-settings svg {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.fakemute-btn-top:hover svg,
+.fakemute-btn-settings:hover svg {
+    transform: scale(1.1);
+}
+
+/* ─── Popout Container (Glassmorphism + Premium Dark) ─── */
+.fakemute-popout {
+    width: 240px;
+    padding: 16px;
+    background: rgba(17, 18, 20, 0.75);
+    backdrop-filter: blur(16px) saturate(180%);
+    -webkit-backdrop-filter: blur(16px) saturate(180%);
+    border-radius: 16px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.45), 0 0 0 1px rgba(0, 0, 0, 0.2);
+    font-family: var(--font-primary, "gg sans", "Noto Sans", "Helvetica Neue", Helvetica, Arial, sans-serif);
+    color: var(--text-normal, #dbdee1);
+    animation: fakemute-spring-in 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.15) forwards;
+    transform-origin: top center;
+}
+
+@keyframes fakemute-spring-in {
+    0% {
+        opacity: 0;
+        transform: translateY(-8px) scale(0.92);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+/* ─── Header ─── */
+.fakemute-popout-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 14px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.fakemute-popout-title {
+    font-size: 13px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    background: linear-gradient(135deg, #5865f2 0%, #eb459e 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-shadow: 0 2px 8px rgba(88, 101, 242, 0.25);
+}
+
+.fakemute-popout-header span:first-child {
+    font-size: 16px;
+    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
+}
+
+/* ─── Toggle Rows ─── */
+.fakemute-popout-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 6px;
+    border-radius: 8px;
+    transition: background 0.2s ease;
+}
+
+.fakemute-popout-row:hover {
+    background: rgba(255, 255, 255, 0.04);
+}
+
+.fakemute-popout-row + .fakemute-popout-row {
+    margin-top: 4px;
+}
+
+.fakemute-popout-label {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-normal, #dbdee1);
+    transition: color 0.2s ease;
+}
+
+.fakemute-popout-label svg {
+    width: 20px;
+    height: 20px;
+    flex-shrink: 0;
+    color: var(--interactive-normal, #b5bac1);
+    transition: color 0.2s ease, transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.fakemute-popout-row:hover .fakemute-popout-label svg {
+    color: var(--interactive-hover, #dcddde);
+    transform: scale(1.1) rotate(-4deg);
+}
+
+/* ─── Toggle Switch (Modern/iOS Style) ─── */
+.fakemute-switch {
+    position: relative;
+    width: 44px;
+    height: 26px;
+    border-radius: 13px;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    background: rgba(128, 132, 142, 0.4);
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.2);
+    transition: background 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    flex-shrink: 0;
+    outline: none;
+}
+
+.fakemute-switch:hover {
+    background: rgba(128, 132, 142, 0.6);
+}
+
+.fakemute-switch.active {
+    background: #3ba55c; /* Discord Green */
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1), 0 0 12px rgba(59, 165, 92, 0.4);
+}
+
+.fakemute-switch.active:hover {
+    background: #2d8146;
+}
+
+.fakemute-switch-knob {
+    position: absolute;
+    top: 3px;
+    left: 3px;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: #ffffff;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
+    transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.3s ease;
+    pointer-events: none;
+}
+
+.fakemute-switch.active .fakemute-switch-knob {
+    transform: translateX(18px);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+}
+
+/* Settings bar button container */
+.fakemute-settings-btn svg:has(> [mask^="url(#svg-mask-panel-button)"]) {
+    display: none;
+}
