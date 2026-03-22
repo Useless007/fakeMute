@@ -100,9 +100,9 @@ function FakeMutePopout({ onClose }: { onClose: () => void; }) {
                     }}
                 />
             </div>
-            
+
             <div className="fakemute-popout-divider" />
-            
+
             <div className="fakemute-popout-row">
                 <div className="fakemute-popout-info">
                     <div className="fakemute-popout-label">
@@ -119,6 +119,10 @@ function FakeMutePopout({ onClose }: { onClose: () => void; }) {
                         setDeafen(getSpoofDeafen());
                     }}
                 />
+            </div>
+
+            <div className="fakemute-popout-footer">
+                <span>By jxyluvcode &amp; useless007</span>
             </div>
         </div>
     );
