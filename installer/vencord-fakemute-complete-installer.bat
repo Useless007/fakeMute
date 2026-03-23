@@ -1,193 +1,135 @@
 @echo off
 setlocal enabledelayedexpansion
 
-echo 🎭 Vencord + FakeMute Complete External Installer
-echo =================================================
+:: enable color
+reg add HKCU\Console /v VirtualTerminalLevel /t REG_DWORD /d 1 /f >nul 2>&1
+
+:: colors
+set GREEN=[92m
+set RED=[91m
+set YELLOW=[93m
+set CYAN=[96m
+set RESET=[0m
+
+echo.
+echo %CYAN%=====================================%RESET%
+echo %CYAN%  Vencord + FakeMute Auto Installer  %RESET%
+echo %CYAN%=====================================%RESET%
 echo.
 
-:: Step 1: Check Git installation
-echo [1/8] Checking Git installation...
+set "VENCORD_DIR=%USERPROFILE%\Desktop\Vencord"
+set "PLUGIN_DIR=%VENCORD_DIR%\src\userplugins\fakeMute"
+
+:: STEP 1
+echo %CYAN%[1/8] Checking Git...%RESET%
+
 where git >nul 2>&1
 if errorlevel 1 (
-    echo ❌ Git not found. Installing Git...
-    echo Downloading Git for Windows...
-    powershell -Command "& {[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12; Invoke-WebRequest -Uri 'https://github.com/git-for-windows/git/releases/download/v2.43.0.windows.1/Git-2.43.0-64-bit.exe' -OutFile '%TEMP%\Git-Installer.exe'}"
-    
-    echo Installing Git silently...
-    start /wait %TEMP%\Git-Installer.exe /VERYSILENT /NORESTART
-    del %TEMP%\Git-Installer.exe
-    
-    :: Refresh PATH
-    set "PATH=%PATH%;C:\Program Files\Git\bin;C:\Program Files\Git\cmd"
-    
-    :: Verify installation
-    where git >nul 2>&1
-    if errorlevel 1 (
-        echo ❌ Git installation failed. Please install Git manually from https://git-scm.com/
-        pause
-        exit /b 1
-    )
-    echo ✅ Git installed successfully!
-) else (
-    echo ✅ Git is already installed
+
+echo %YELLOW%Installing Git...%RESET%
+
+powershell -Command "iwr https://github.com/git-for-windows/git/releases/latest/download/Git-64-bit.exe -OutFile %TEMP%\git.exe"
+
+start /wait %TEMP%\git.exe /VERYSILENT
+
 )
 
-:: Step 2: Clone Vencord to Desktop
+echo %GREEN%Git OK%RESET%
+
+
+:: STEP 2
 echo.
-echo [2/8] Cloning Vencord to Desktop...
-set "vencord_path=%USERPROFILE%\Desktop\Vencord"
+echo %CYAN%[2/8] Installing Vencord to Desktop...%RESET%
 
-if exist "%vencord_path%" (
-    echo ⚠️  Vencord folder already exists on Desktop. Removing old version...
-    rmdir /s /q "%vencord_path%"
+if exist "%VENCORD_DIR%" (
+echo %YELLOW%Removing old version%RESET%
+rmdir /s /q "%VENCORD_DIR%"
 )
 
-echo Cloning Vencord repository...
-git clone https://github.com/Vendicated/Vencord.git "%vencord_path%"
+git clone https://github.com/Vendicated/Vencord.git "%VENCORD_DIR%"
 
-if errorlevel 1 (
-    echo ❌ Failed to clone Vencord repository
-    pause
-    exit /b 1
-)
-echo ✅ Vencord cloned successfully!
+echo %GREEN%Vencord OK%RESET%
 
-:: Step 3: Create userplugins folder and clone fakeMute
+
+:: STEP 3
 echo.
-echo [3/8] Installing fakeMute plugin...
-set "userplugins_path=%vencord_path%\src\userplugins"
+echo %CYAN%[3/8] Installing fakeMute...%RESET%
 
-if not exist "%userplugins_path%" (
-    echo Creating userplugins directory...
-    mkdir "%userplugins_path%"
-)
+if not exist "%VENCORD_DIR%\src\userplugins" mkdir "%VENCORD_DIR%\src\userplugins"
 
-echo Cloning fakeMute plugin...
-cd /d "%userplugins_path%"
-git clone https://github.com/Useless007/fakeMute.git fakeMute
+git clone https://github.com/Useless007/fakeMute.git "%PLUGIN_DIR%"
 
-if errorlevel 1 (
-    echo ❌ Failed to clone fakeMute plugin
-    pause
-    exit /b 1
-)
-echo ✅ fakeMute plugin installed successfully!
+echo %GREEN%fakeMute OK%RESET%
 
-:: Step 4: Check Node.js and npm
+
+:: STEP 4
 echo.
-echo [4/8] Checking Node.js and npm...
+echo %CYAN%[4/8] Checking node...%RESET%
+
 where node >nul 2>&1
+
 if errorlevel 1 (
-    echo ❌ Node.js not found. Installing Node.js...
-    echo Downloading Node.js installer...
-    powershell -Command "& {[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12; Invoke-WebRequest -Uri 'https://nodejs.org/dist/v20.11.0/node-v20.11.0-x64.msi' -OutFile '%TEMP%\NodeJS-Installer.msi'}"
-    
-    echo Installing Node.js silently...
-    start /wait msiexec /i %TEMP%\NodeJS-Installer.msi /quiet /norestart
-    del %TEMP%\NodeJS-Installer.msi
-    
-    :: Refresh PATH
-    set "PATH=%PATH%;C:\Program Files\nodejs"
-    
-    :: Verify installation
-    where node >nul 2>&1
-    if errorlevel 1 (
-        echo ❌ Node.js installation failed. Please install Node.js manually from https://nodejs.org/
-        pause
-        exit /b 1
-    )
-    echo ✅ Node.js installed successfully!
-) else (
-    echo ✅ Node.js is already installed
+
+echo %YELLOW%Installing node...%RESET%
+
+powershell -Command "iwr https://nodejs.org/dist/v20.11.0/node-v20.11.0-x64.msi -OutFile %TEMP%\node.msi"
+
+start /wait msiexec /i %TEMP%\node.msi /quiet
+
 )
 
-where npm >nul 2>&1
-if errorlevel 1 (
-    echo ❌ npm not found in PATH
-    pause
-    exit /b 1
-) else (
-    echo ✅ npm is available
-)
+echo %GREEN%node OK%RESET%
 
-:: Step 5: Install pnpm globally
+
+:: STEP 5
 echo.
-echo [5/8] Installing pnpm...
+echo %CYAN%[5/8] Installing pnpm...%RESET%
+
 where pnpm >nul 2>&1
-if errorlevel 1 (
-    echo Installing pnpm globally...
-    call npm install -g pnpm
-    
-    if errorlevel 1 (
-        echo ❌ Failed to install pnpm
-        pause
-        exit /b 1
-    )
-    echo ✅ pnpm installed successfully!
-) else (
-    echo ✅ pnpm is already installed
-)
 
-:: Step 6: Install dependencies
+if errorlevel 1 npm i -g pnpm
+
+echo %GREEN%pnpm OK%RESET%
+
+
+:: STEP 6
 echo.
-echo [6/8] Installing Vencord dependencies...
-cd /d "%vencord_path%"
-echo Running pnpm install...
-call pnpm install
+echo %CYAN%[6/8] Installing dependencies...%RESET%
 
-if errorlevel 1 (
-    echo ❌ Failed to install dependencies
-    pause
-    exit /b 1
-)
-echo ✅ Dependencies installed successfully!
+cd /d "%VENCORD_DIR%"
 
-:: Step 7: Build Vencord
+call pnpm i
+
+echo %GREEN%deps OK%RESET%
+
+
+:: STEP 7
 echo.
-echo [7/8] Building Vencord...
-echo Running pnpm build...
+echo %CYAN%[7/8] Building...%RESET%
+
 call pnpm build
 
-if errorlevel 1 (
-    echo ❌ Build failed
-    pause
-    exit /b 1
-)
-echo ✅ Vencord built successfully!
+echo %GREEN%build OK%RESET%
 
-:: Step 8: Inject Vencord
+
+:: STEP 8
 echo.
-echo [8/8] Injecting Vencord into Discord...
-echo Running pnpm inject...
+echo %CYAN%[8/8] Injecting...%RESET%
+
 call pnpm inject
 
-if errorlevel 1 (
-    echo ❌ Injection failed
-    pause
-    exit /b 1
-)
-echo ✅ Vencord injected successfully!
+echo %GREEN%inject OK%RESET%
 
-:: Final success message
+
 echo.
-echo 🎉 Installation completed successfully!
+echo %GREEN%==============================%RESET%
+echo %GREEN% INSTALL COMPLETE %RESET%
+echo %GREEN%==============================%RESET%
+
 echo.
-echo 📋 Summary:
-echo    ✅ Git installed and configured
-echo    ✅ Vencord cloned to Desktop
-echo    ✅ fakeMute plugin installed
-echo    ✅ Node.js and npm installed
-echo    ✅ pnpm installed
-echo    ✅ Dependencies installed
-echo    ✅ Vencord built
-echo    ✅ Vencord injected into Discord
+echo %CYAN%Vencord installed at:%RESET%
+echo %YELLOW%%VENCORD_DIR%%RESET%
+
 echo.
-echo 🚀 Next steps:
-echo    1. Restart Discord completely
-echo    2. Go to Settings ^> Plugins
-echo    3. Find "FakeMute" and enable it
-echo    4. Look for the microphone icon with slash in the top right corner
-echo.
-echo 📁 Vencord location: %vencord_path%
-echo.
+echo restart discord
 pause
