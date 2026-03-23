@@ -1,0 +1,134 @@
+/* ─── Button (Top / Settings) ─── */
+.fakemute-btn-top svg,
+.fakemute-btn-settings svg {
+    color: var(--interactive-normal, #b5bac1);
+    transition: color 0.15s ease;
+}
+
+.fakemute-btn-top:hover svg,
+.fakemute-btn-settings:hover svg {
+    color: var(--interactive-hover, #dcddde);
+}
+
+.fakemute-btn-active svg {
+    color: var(--brand-experiment, #5865f2);
+}
+
+/* ─── Popout Container ─── */
+.fakemute-popout {
+    width: 300px;
+    padding: 14px 12px;
+    background: #2b2d31 !important;
+    border-radius: 8px;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.24);
+    border: 1px solid #1e1f22 !important;
+    font-family: var(--font-primary, "gg sans", sans-serif);
+    color: #dbdee1;
+}
+
+/* ─── Header ─── */
+.fakemute-popout-header {
+    font-size: 12px;
+    font-weight: 700;
+    color: #b5bac1;
+    margin-bottom: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* ─── Row ─── */
+.fakemute-popout-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 12px;
+    margin: 2px 0;
+    border-radius: 6px;
+    transition: background 0.15s ease;
+    background: rgba(0, 0, 0, 0.24);
+}
+
+.fakemute-popout-row:hover {
+    background: rgba(255, 255, 255, 0.08);
+}
+
+/* ─── Label ─── */
+.fakemute-popout-label {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 14.5px;
+    color: #fafafa !important;
+    font-weight: 600;
+}
+
+
+.fakemute-popout-label svg {
+    width: 18px;
+    height: 18px;
+    color: #b5bac1;
+}
+
+/* ─── Subtext ─── */
+.fakemute-popout-subtext {
+    font-size: 11.5px;
+    color: #b5bac1;
+    margin-top: 4px;
+    margin-left: 28px;
+}
+
+/* ─── Divider ─── */
+.fakemute-popout-divider {
+    height: 1px;
+    background: rgba(255, 255, 255, 0.06);
+    margin: 8px 0;
+}
+
+/* ─── Toggle Switch (Discord-like) ─── */
+.fakemute-switch {
+    position: relative;
+    width: 40px;
+    height: 22px;
+    border-radius: 11px;
+    background: #80848e;
+    cursor: pointer;
+    border: none;
+    transition: background 0.2s ease;
+}
+
+.fakemute-switch.active {
+    background: #23a559;
+    /* Discord Green */
+}
+
+.fakemute-switch-knob {
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: white;
+    transition: transform 0.2s ease;
+}
+
+.fakemute-switch.active .fakemute-switch-knob {
+    transform: translateX(18px);
+}
+
+/* ─── Footer ─── */
+.fakemute-popout-footer {
+    display: flex;
+    justify-content: center;
+    margin-top: 12px;
+    padding-top: 10px;
+    border-top: 1px solid rgba(255, 255, 255, 0.04);
+}
+
+.fakemute-popout-footer span {
+    font-size: 10px;
+    color: #80848e;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+}
