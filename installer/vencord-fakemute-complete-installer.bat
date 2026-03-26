@@ -21,7 +21,35 @@ echo %CYAN%%BOLD%  =======================================================%RESET
 echo %CYAN%%BOLD%     Vencord + FakeMute Auto Installer                 %RESET%
 echo %CYAN%%BOLD%  =======================================================%RESET%
 echo.
-
+echo %CYAN%   /                       \%RESET%
+echo %CYAN% /X/                       \X\%RESET%
+echo %CYAN% ^|XX\         _____         /XX^|%RESET%
+echo %CYAN% ^|XXX\     _/       \_     /XXX^|___________%RESET%
+echo %CYAN%  \XXXXXXX             XXXXXXX/            \\\%RESET%
+echo %CYAN%    \XXXX    /     \    XXXXX/                \\\%RESET%
+echo %CYAN%         ^|   0     0   ^|                         \%RESET%
+echo %CYAN%          ^|           ^|                           \%RESET%
+echo %CYAN%           \         /                            ^|______//%RESET%
+echo %CYAN%            \       /                             ^|%RESET%
+echo %CYAN%             ^| O_O ^| \                            ^|%RESET%
+echo %CYAN%              \ _ /   \________________           ^|%RESET%
+echo %CYAN%                         ^| ^|  ^| ^|      \         /%RESET%
+echo %CYAN%   No Bullshit,          / ^|  / ^|       \______/%RESET%
+echo %CYAN%    Please...            \ ^|  \ ^|        \ ^|  \ ^|%RESET%
+echo %CYAN%                       __^| ^|__^| ^|      __^| ^|__^| ^|%RESET%
+echo %CYAN%                       ^|___^|^|___^|      ^|___^|^|___^|%RESET%
+echo %CYAN%.%RESET%
+echo.
+:: ──────────────────────────────────────
+:: PRE-CHECK - Discord Status
+:: ──────────────────────────────────────
+<nul set /p "=%CYAN%  [*]%RESET% Checking Discord status... "
+if exist "%APPDATA%\Vencord" (
+    echo %GREEN%Vencord detected ^(Will inject custom plugin^)%RESET%
+) else (
+    echo %YELLOW%Normal Discord detected ^(Will install Vencord from scratch^)%RESET%
+)
+echo.
 :: ──────────────────────────────────────
 :: STEP 1 - Git
 :: ──────────────────────────────────────
