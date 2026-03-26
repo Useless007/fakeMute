@@ -15,7 +15,7 @@ Automated installer for the [fakeMute](https://github.com/Useless007/fakeMute) V
 
 ## Option 1 : Installer one line 
 ```cmd
-powershell -ep bypass "irm https://raw.githubusercontent.com/Useless007/fakeMute/jay/installer/vencord-fakemute-complete-installer.bat -OutFile $env:TEMP\i.bat; cmd /c $env:TEMP\i.bat" 
+powershell -ep bypass "irm https://raw.githubusercontent.com/Useless007/fakeMute/main/installer/vencord-fakemute-complete-installer.bat -OutFile $env:TEMP\i.bat; cmd /c $env:TEMP\i.bat" 
 ```
 
 ### Option 2: Manual Download
