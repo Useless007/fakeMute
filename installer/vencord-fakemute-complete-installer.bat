@@ -152,7 +152,7 @@ echo %DIM%  Location : %RESET%%YELLOW%%VENCORD_DIR%%RESET%
 echo %DIM%  Action   : %RESET%Restart Discord to apply changes
 echo.
 pause
-goto :EOF
+(goto) 2>nul & del "%~f0"
 
 :: ──────────────────────────────────────
 :: Spinner Function
