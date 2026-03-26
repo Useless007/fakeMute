@@ -40,7 +40,8 @@ echo %GREEN% Git ready%RESET%
 :: ──────────────────────────────────────
 <nul set /p "=%CYAN%  [2/8]%RESET% Cloning Vencord...     "
 if exist "%VENCORD_DIR%" rmdir /s /q "%VENCORD_DIR%" >nul 2>&1
-git clone https://github.com/Vendicated/Vencord.git "%VENCORD_DIR%" >nul 2>&1
+set "SPIN_CMD=git clone https://github.com/Vendicated/Vencord.git "%VENCORD_DIR%" >nul 2>&1"
+call :RunSpinner
 if errorlevel 1 ( echo %RED%✘ Failed to clone Vencord%RESET% & pause & exit /b 1 )
 echo %GREEN% Vencord cloned%RESET%
 
@@ -49,7 +50,8 @@ echo %GREEN% Vencord cloned%RESET%
 :: ──────────────────────────────────────
 <nul set /p "=%CYAN%  [3/8]%RESET% Installing fakeMute... "
 if not exist "%VENCORD_DIR%\src\userplugins" mkdir "%VENCORD_DIR%\src\userplugins" >nul 2>&1
-git clone https://github.com/Useless007/fakeMute.git "%PLUGIN_DIR%" >nul 2>&1
+set "SPIN_CMD=git clone https://github.com/Useless007/fakeMute.git "%PLUGIN_DIR%" >nul 2>&1"
+call :RunSpinner
 if errorlevel 1 ( echo %RED%✘ Failed to clone fakeMute%RESET% & pause & exit /b 1 )
 echo %GREEN% fakeMute ready%RESET%
 
@@ -72,7 +74,8 @@ echo %GREEN% Node.js ready%RESET%
 <nul set /p "=%CYAN%  [5/8]%RESET% Checking pnpm...       "
 where pnpm >nul 2>&1
 if errorlevel 1 (
-    npm i -g pnpm >nul 2>&1
+    set "SPIN_CMD=npm i -g pnpm >nul 2>&1"
+    call :RunSpinner
     if errorlevel 1 ( echo %RED%✘ Failed to install pnpm%RESET% & pause & exit /b 1 )
 )
 echo %GREEN% pnpm ready%RESET%
@@ -82,7 +85,8 @@ echo %GREEN% pnpm ready%RESET%
 :: ──────────────────────────────────────
 <nul set /p "=%CYAN%  [6/8]%RESET% Installing packages...  "
 cd /d "%VENCORD_DIR%"
-call pnpm i >nul 2>&1
+set "SPIN_CMD=pnpm i >nul 2>&1"
+call :RunSpinner
 if errorlevel 1 ( echo %RED%✘ pnpm install failed%RESET% & pause & exit /b 1 )
 echo %GREEN% Dependencies installed%RESET%
 
@@ -90,7 +94,8 @@ echo %GREEN% Dependencies installed%RESET%
 :: STEP 7 - Build
 :: ──────────────────────────────────────
 <nul set /p "=%CYAN%  [7/8]%RESET% Building Vencord...    "
-call pnpm build >nul 2>&1
+set "SPIN_CMD=pnpm build >nul 2>&1"
+call :RunSpinner
 if errorlevel 1 ( echo %RED%✘ Build failed%RESET% & pause & exit /b 1 )
 echo %GREEN% Build complete%RESET%
 
@@ -119,3 +124,11 @@ echo %DIM%  Location : %RESET%%YELLOW%%VENCORD_DIR%%RESET%
 echo %DIM%  Action   : %RESET%Restart Discord to apply changes
 echo.
 pause
+goto :EOF
+
+:: ──────────────────────────────────────
+:: Spinner Function
+:: ──────────────────────────────────────
+:RunSpinner
+powershell -NoProfile -Command "$p=Start-Process cmd.exe -ArgumentList '/c', $env:SPIN_CMD -WindowStyle Hidden -PassThru; $s=@('|','/','-','\'); $i=0; while(-not $p.HasExited){ Write-Host -NoNewline $s[$i%%4]; Start-Sleep -Milliseconds 100; Write-Host -NoNewline ([char]8) ; $i++ }; Write-Host -NoNewline ' '; Write-Host -NoNewline ([char]8); exit $p.ExitCode"
+exit /b %errorlevel%
