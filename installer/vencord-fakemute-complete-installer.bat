@@ -29,8 +29,9 @@ echo.
 where git >nul 2>&1
 if errorlevel 1 (
     <nul set /p "=%YELLOW%not found, installing...%RESET%  "
-    powershell -Command "iwr https://github.com/git-for-windows/git/releases/latest/download/Git-64-bit.exe -OutFile '%TEMP%\git.exe'" >nul 2>&1
-    start /wait %TEMP%\git.exe /VERYSILENT >nul 2>&1
+    powershell -Command "Invoke-WebRequest -Uri 'https://github.com/git-for-windows/git/releases/latest/download/Git-64-bit.exe' -OutFile '%TEMP%\git.exe'" >nul 2>&1
+    start /wait "" "%TEMP%\git.exe" /VERYSILENT >nul 2>&1
+    set "PATH=%PATH%;C:\Program Files\Git\cmd"
 )
 echo %GREEN% Git ready%RESET%
 
@@ -59,8 +60,9 @@ echo %GREEN% fakeMute ready%RESET%
 where node >nul 2>&1
 if errorlevel 1 (
     <nul set /p "=%YELLOW%not found, installing...%RESET%  "
-    powershell -Command "iwr https://nodejs.org/dist/v20.11.0/node-v20.11.0-x64.msi -OutFile '%TEMP%\node.msi'" >nul 2>&1
-    start /wait msiexec /i %TEMP%\node.msi /quiet >nul 2>&1
+    powershell -Command "Invoke-WebRequest -Uri 'https://nodejs.org/dist/v20.11.0/node-v20.11.0-x64.msi' -OutFile '%TEMP%\node.msi'" >nul 2>&1
+    start /wait msiexec /i "%TEMP%\node.msi" /quiet /norestart >nul 2>&1
+    set "PATH=%PATH%;C:\Program Files\nodejs"
 )
 echo %GREEN% Node.js ready%RESET%
 
@@ -95,8 +97,13 @@ echo %GREEN% Build complete%RESET%
 :: ──────────────────────────────────────
 :: STEP 8 - Inject
 :: ──────────────────────────────────────
-<nul set /p "=%CYAN%  [8/8]%RESET% Injecting into Discord... [Press Enter to Continue] "
-call pnpm inject >nul 2>&1
+
+<nul set /p "=%CYAN%  [8/8]%RESET% Injecting into Discord... "
+echo.
+echo %YELLOW%Please select your Discord version below:%RESET%
+echo.
+call pnpm inject
+echo.
 if errorlevel 1 ( echo %RED%✘ Inject failed%RESET% & pause & exit /b 1 )
 echo %GREEN% Injected successfully%RESET%
 
